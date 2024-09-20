@@ -1,0 +1,306 @@
+<html lang="en-US">
+<head>
+	<title>Randle</title>
+	<link rel="icon" type="image/png" href="frog.png">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+	<style>
+		body{
+			background-image: url("frame.png");
+			background-size: 100% 100%;
+		}
+		.wave-div{
+			display: flex;
+			justify-content: center;
+			padding-top: 20px;
+		}
+		.level-info{
+			text-align: center;
+			background-color: #695747;
+			font-weight: 700;
+			color: yellow;
+			width: 220px;
+			border-radius: 10px;
+			border: 3px solid #4C2C20;
+			-webkit-text-stroke-width: 4px;
+  			-webkit-text-stroke-color: black;
+  			paint-order: stroke fill;
+		}
+		.wave-span{
+			background-color: #392d24;
+			border-radius: 6px;
+			color: white;
+			padding: 2px 30px;
+			width: fit-content;
+			font-weight: 700;
+			position:relative;
+			top:-14px;
+			left: calc((220px - 130px) / 2);
+		}
+		#hint-div{
+			margin: 1em;
+			max-height: 70%;
+			overflow-y: auto;
+		}
+		.guess-div{
+			text-align: center;
+		}
+		.input-table{
+			background-image: url("guess-bg.png");
+			background-size: 100% 100%;
+			margin-left: auto;
+			margin-right: auto;
+			margin-top: 1em;
+			margin-bottom: 1em;
+			text-align: center;
+			vertical-align: middle;
+		}
+		.input-table tr td:first-child{ 
+			padding-left: 0.5em;
+			width:2.5em!important;
+		}
+		.input-table tr td:last-child{ 
+			padding-right: 0.5em;
+			width:2.5em!important;
+		}
+		.input-box{
+			font-size: 36pt;
+			font-weight: 700;
+			width: 2em;
+			height: 2em;
+			padding-bottom: 0.5em;
+			color: white;  
+			-webkit-text-stroke-width: 7px;
+  			-webkit-text-stroke-color: black;
+  			paint-order: stroke fill;
+/*			border: 1px solid black;*/
+		}
+		.answer-box{
+			width: 1.5em;
+			height: 1.5em;
+			margin-left: 0.25em;
+			margin-top: 0.25em;
+			padding-top: 0.125em;
+			border: 2px solid black;
+			border-radius: 5px;
+		}
+		.answer-box.active{
+			border: 3px solid red;
+		}
+		.answer-g{
+			background-color: green;
+		}
+		.answer-y{
+			background-color: yellow;
+		}
+		.answer-b{
+			background-color: gray;
+		}
+		.submit-btn{
+			position: absolute;
+			left: 50%;
+			bottom: 3em;
+			font-size: 18pt;
+			border-radius: 5px / 50%;
+			background-color: #EED149;
+			transform: translate(-50%, 0);
+			color: white;  
+		}
+		.summon-label{
+			background-color: #D3A73D;
+			font-weight: 700;
+			border-radius: 3px 3px 0px 0px / 100% 100% 0% 0%;
+			margin: 1px -2px;
+			padding: 2px 8px;
+			-webkit-text-stroke-width: 3px;
+  			-webkit-text-stroke-color: black;
+  			paint-order: stroke fill;
+		}
+		.cost-label{
+			background-color: #29191A;
+			width: 2.5em;
+			height: 1.5em;
+			margin: 3px auto;
+			font-weight: 700;
+			text-align: right;
+			padding-top: 0px;
+			padding-bottom: 0px;
+			padding-left: 0px;
+			padding-right: 0.5em;
+			border-radius: 20px;
+		}
+
+		.cost-label img{
+			position: relative;
+			left: -0.2em;
+			top: -3px;
+		}
+	</style>
+</head>
+<body>
+	<div class="wave-div">
+		<div class="level-info">
+			<div class="wave-span">WAVE 1</div>
+			NORMAL
+		</div>
+	</div>
+	<div id="hint-div">
+		<div class="guess-div" id="answer-div">
+			<table class="input-table">
+				<tr>
+					<td class="input-box"><div class="answer-box active" data-pos="1"></div></td>
+					<td class="input-box"><div class="answer-box" data-pos="2"></div></td>
+					<td class="input-box"><div class="answer-box" data-pos="3"></div></td>
+					<td class="input-box"><div class="answer-box" data-pos="4"></div></td>
+					<td class="input-box"><div class="answer-box" data-pos="5"></div></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+
+	<div>
+		<button class="submit-btn" id="submit-btn">
+			<div class="summon-label">Summon</div>
+			<div class="cost-label">
+				<span><img src="coin.png" width="30px"></span><span>1</span>
+			</div>
+		</button>
+	</div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+
+<script>
+
+	function getCell(i){
+		return $('#answer-div div[data-pos="'+i+'"]');
+	}
+
+	function getWord(){
+		let word = "";
+		for(let i=1; i<=5; i++){
+			let char = getCell(i).text();
+			if(char.length == 0){
+				return null;
+			}
+			word += char;
+		}
+		return word;
+	}
+
+	function check(word, guess){
+		let cw = [0, 0, 0, 0, 0];
+		let cg = [0, 0, 0, 0, 0];
+		verdict = [0, 0, 0, 0, 0];
+		for(let i=0; i<5; i++){
+			if(word.charAt(i) == guess.charAt(i)){
+				cw[i] = 1;
+				cg[i] = 1;
+				verdict[i] = 1;
+			}
+		}
+		for(let i=0; i<5; i++){
+			for(let j=0; j<5; j++){
+				if(cw[i] != 0 || cg[j] != 0){
+					continue
+				}
+				if(word.charAt(i) == guess.charAt(j)){
+					cw[i] = 1;
+					cg[j] = 1;
+					verdict[j] = 2;
+				}
+			}
+		}
+		return verdict;
+	}
+
+	// testing
+	const riddleWord = "APPLE";
+
+	var wordPos = 1;
+	$(document).on('keypress', function(e){
+		if (event.keyCode >= 65 && event.keyCode <= 90) {
+		    // Alphabet upper case
+		} else if (event.keyCode >= 97 && event.keyCode <= 122) {
+		    // Alphabet lower case
+		} else {
+			return;
+		}
+		if (e.which !== 0 && wordPos<=5) {
+			$('#answer-div div[data-pos="'+wordPos+'"]').text(String.fromCharCode(e.which).toUpperCase());
+
+			if(wordPos<=4){
+				wordPos++;
+
+				$('#answer-div div[data-pos="'+(wordPos-1)+'"]').removeClass('active');
+				$('#answer-div div[data-pos="'+wordPos+'"]').addClass('active');
+			}
+		}
+	})
+
+	$(document).on('keydown', function(e){
+		if (e.keyCode==8){
+			if($('#answer-div div[data-pos="'+wordPos+'"]').text() != ''){
+				$('#answer-div div[data-pos="'+wordPos+'"]').text('');
+				$('#answer-div div[data-pos="'+(wordPos+1)+'"]').removeClass('active');
+				$('#answer-div div[data-pos="'+wordPos+'"]').addClass('active');
+			}else if(wordPos>=2){
+				wordPos--;
+				$('#answer-div div[data-pos="'+wordPos+'"]').text('');
+				$('#answer-div div[data-pos="'+(wordPos+1)+'"]').removeClass('active');
+				$('#answer-div div[data-pos="'+wordPos+'"]').addClass('active');
+			}
+		}
+	});
+
+	function clickFocus(){
+		if($(this).closest("#answer-div").length==0) return;
+		$(".answer-box").removeClass('active');
+		$(this).addClass('active');
+		wordPos = parseInt($(this).data('pos'));
+	}
+
+	$("#answer-div .answer-box").click(clickFocus);
+
+	$('#submit-btn').click(function(){
+		let guessWord = getWord();
+		if(guessWord === null){
+			return;
+		}
+		// Check word validity
+
+		$("#answer-div .answer-box").removeClass('active')
+		let newDiv = $("#answer-div").clone();
+
+		let verdict = check(riddleWord, guessWord);
+		let allCorrect = true;
+		for(let i=1; i<=5; i++){
+			if(verdict[i-1] == 0){
+				getCell(i).addClass('answer-b');
+				allCorrect = false;
+			}else if(verdict[i-1] == 1){
+				getCell(i).addClass('answer-g');
+			}else{
+				getCell(i).addClass('answer-y');
+				allCorrect = false;
+			}
+		}
+		if(allCorrect) return;
+
+		$("#answer-div").attr('id', '');
+		$('div[data-pos]', newDiv).empty();
+		$('div[data-pos=1]', newDiv).addClass('active');
+		$('#hint-div').append(newDiv);
+		$(".answer-box", newDiv).click(clickFocus);
+		wordPos = 1;
+		$("#hint-div").scrollTop($("#hint-div")[0].scrollHeight);
+	});
+
+	// $(function(){
+	// 	$.ajax({
+	// 		url: 'word1',
+	// 		success: function(data){
+	// 		}
+	// 	})
+	// });
+</script>
+</html>
