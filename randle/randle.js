@@ -61,52 +61,28 @@
 		return verdict;
 	}
 
-	var wordPos = 1;
-	$(document).on('keypress', function(e){
-		if (event.keyCode >= 65 && event.keyCode <= 90) {
-		    // Alphabet upper case
-		} else if (event.keyCode >= 97 && event.keyCode <= 122) {
-		    // Alphabet lower case
-		} else {
-			return;
-		}
-		if (e.which !== 0 && wordPos<=5) {
-			$('#answer-div div[data-pos="'+wordPos+'"]').text(String.fromCharCode(e.which).toUpperCase());
-
-			if(wordPos<=4){
-				wordPos++;
-
-				$('#answer-div div[data-pos="'+(wordPos-1)+'"]').removeClass('active');
-				$('#answer-div div[data-pos="'+wordPos+'"]').addClass('active');
+	function setKeyboard(guess, hint){
+		guess = guess.toUpperCase();
+		for(let i=0; i<5; i++){
+			let key = $('.keyboard-key[data-key="'+guess[i]+'"]')
+			if(hint[i] == 0){
+				if(!key.hasClass('answer-g') && !key.hasClass('answer-b') ){
+					key.addClass('answer-b');
+				}
+			}else if(hint[i] == 1){
+				key.removeClass('answer-b');
+				key.removeClass('answer-y');
+				key.addClass('answer-g');
+			}else{
+				if(!key.hasClass('answer-g')){
+					key.removeClass('answer-b');
+					key.addClass('answer-y');
+				}
 			}
 		}
-	})
-
-	$(document).on('keydown', function(e){
-		if (e.keyCode==8){
-			if($('#answer-div div[data-pos="'+wordPos+'"]').text() != ''){
-				$('#answer-div div[data-pos="'+wordPos+'"]').text('');
-				$('#answer-div div[data-pos="'+(wordPos+1)+'"]').removeClass('active');
-				$('#answer-div div[data-pos="'+wordPos+'"]').addClass('active');
-			}else if(wordPos>=2){
-				wordPos--;
-				$('#answer-div div[data-pos="'+wordPos+'"]').text('');
-				$('#answer-div div[data-pos="'+(wordPos+1)+'"]').removeClass('active');
-				$('#answer-div div[data-pos="'+wordPos+'"]').addClass('active');
-			}
-		}
-	});
-
-	function clickFocus(){
-		if($(this).closest("#answer-div").length==0) return;
-		$(".answer-box").removeClass('active');
-		$(this).addClass('active');
-		wordPos = parseInt($(this).data('pos'));
 	}
 
-	$("#answer-div .answer-box").click(clickFocus);
-
-	$('#submit-btn').click(function(){
+	function submitWord(){
 		let guessWord = getWord().toLowerCase();
 		if(guessWord === null){
 			return;
@@ -144,7 +120,73 @@
 		$(".answer-box", newDiv).click(clickFocus);
 		wordPos = 1;
 		$("#hint-div").scrollTop($("#hint-div")[0].scrollHeight);
+		setKeyboard(guessWord, verdict);
+	}
+
+	// Events
+	function inputChar(char){
+		if (wordPos<=5) {
+			$('#answer-div div[data-pos="'+wordPos+'"]').text(char.toUpperCase());
+
+			if(wordPos<=4){
+				wordPos++;
+
+				$('#answer-div div[data-pos="'+(wordPos-1)+'"]').removeClass('active');
+				$('#answer-div div[data-pos="'+wordPos+'"]').addClass('active');
+			}
+		}
+	}
+	function backspace(){
+		if($('#answer-div div[data-pos="'+wordPos+'"]').text() != ''){
+			$('#answer-div div[data-pos="'+wordPos+'"]').text('');
+			$('#answer-div div[data-pos="'+(wordPos+1)+'"]').removeClass('active');
+			$('#answer-div div[data-pos="'+wordPos+'"]').addClass('active');
+		}else if(wordPos>=2){
+			wordPos--;
+			$('#answer-div div[data-pos="'+wordPos+'"]').text('');
+			$('#answer-div div[data-pos="'+(wordPos+1)+'"]').removeClass('active');
+			$('#answer-div div[data-pos="'+wordPos+'"]').addClass('active');
+		}
+	}
+	var wordPos = 1;
+
+	$('.keyboard-key[data-key]').click(function(){
+		inputChar($(this).data("key"));
 	});
+	$('#backspace-btn').click(backspace);
+	$(document).on('keypress', function(e){
+		if (event.keyCode >= 65 && event.keyCode <= 90) {
+		    // Alphabet upper case
+		} else if (event.keyCode >= 97 && event.keyCode <= 122) {
+		    // Alphabet lower case
+		} else {
+			return;
+		}
+		if (e.which !== 0 && wordPos<=5) {
+			inputChar(String.fromCharCode(e.which));
+		}
+	});
+
+	$(document).on('keydown', function(e){
+		if (e.keyCode==8){
+			backspace();
+		}else if(e.keyCode == 13){
+			submitWord();
+		}else if(e.keyCode == 32){
+			
+		}
+	});
+
+	function clickFocus(){
+		if($(this).closest("#answer-div").length==0) return;
+		$(".answer-box").removeClass('active');
+		$(this).addClass('active');
+		wordPos = parseInt($(this).data('pos'));
+	}
+
+	$("#answer-div .answer-box").click(clickFocus);
+
+	$('#submit-btn').click(submitWord);
 
 	$.ajax({
 		url: './word1',

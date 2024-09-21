@@ -16,8 +16,8 @@ body{
 	border-radius: 10px;
 	border: 3px solid #4C2C20;
 	-webkit-text-stroke-width: 4px;
-		-webkit-text-stroke-color: black;
-		paint-order: stroke fill;
+	-webkit-text-stroke-color: black;
+	paint-order: stroke fill;
 }
 .wave-span{
 	background-color: #392d24;
@@ -31,9 +31,13 @@ body{
 	left: calc((220px - 130px) / 2);
 }
 #hint-div{
-	margin: 1em;
+	margin: 0.8em;
 	max-height: 70%;
-	overflow-y: auto;
+/*	overflow-y: auto;*/
+/*}.grid {*/
+  display: grid;
+  grid-template-rows: repeat(5, 1fr);
+  grid-auto-flow: column;
 }
 .guess-div{
 	text-align: center;
@@ -43,8 +47,8 @@ body{
 	background-size: 100% 100%;
 	margin-left: auto;
 	margin-right: auto;
-	margin-top: 1em;
-	margin-bottom: 1em;
+	margin-top: 0.8em;
+	margin-bottom: 0.8em;
 	text-align: center;
 	vertical-align: middle;
 }
@@ -80,23 +84,84 @@ body{
 .answer-box.active{
 	border: 3px solid red;
 }
-.answer-g{
-	background-color: green;
+.answer-b{
+	background-color: gray!important;
 }
 .answer-y{
-	background-color: yellow;
+	background-color: yellow!important;
 }
-.answer-b{
-	background-color: gray;
+.answer-g{
+	background-color: green!important;
 }
-.submit-btn{
+
+#input-area{
 	position: absolute;
+	transform: translate(-50%, 0);
 	left: 50%;
 	bottom: 3em;
+	width: 90%;
+	display: flex;
+	align-items: center;
+}
+
+#keyboard{
+	flex: 4.5;
+	margin: auto;
+}
+.keyboard-row{
+  display: flex;
+  width: 100%;
+  margin: 0 auto 8px;
+  touch-action: manipulation;
+}
+.keyboard-key {
+  font-size: 1.25em;
+  font-weight: bold;
+  border: 0;
+  padding: 0;
+  margin: 0 6px 0 0;
+  height: 58px;
+  border: 3px solid #4C2C20;
+  border-radius: 10px;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  background-color: #695747;
+  color: black;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: uppercase;
+  -webkit-tap-highlight-color: rgba(0,0,0,.3);
+  color: white;
+  font-weight: 700;
+	-webkit-text-stroke-width: 4px;
+	-webkit-text-stroke-color: black;
+	paint-order: stroke fill;
+}
+
+.keyboard-key.answer-b {
+	opacity: 0.3;
+}
+.keyboard-halfkey {
+	flex: 0.5;
+}
+.keyboard-functionkey {
+	flex: 1.5!important;
+}
+.functionBtn-div{
+	flex:1;
+}
+.functionBtn-div > div{
+	padding: 0.5em 2em;
+}
+.submit-btn, .backspace-btn{
+	width:100%;
 	font-size: 18pt;
 	border-radius: 5px / 50%;
 	background-color: #EED149;
-	transform: translate(-50%, 0);
 	color: white;  
 }
 .summon-label{
@@ -104,7 +169,7 @@ body{
 	font-weight: 700;
 	border-radius: 3px 3px 0px 0px / 100% 100% 0% 0%;
 	margin: 1px -2px;
-	padding: 2px 8px;
+	padding: 8px 8px;
 	-webkit-text-stroke-width: 3px;
 		-webkit-text-stroke-color: black;
 		paint-order: stroke fill;
@@ -113,7 +178,7 @@ body{
 	background-color: #29191A;
 	width: 2.5em;
 	height: 1.5em;
-	margin: 3px auto;
+	margin: 10px auto;
 	font-weight: 700;
 	text-align: right;
 	padding-top: 0px;
@@ -146,4 +211,9 @@ body{
 	align-items:center;
 	border: 3px solid #392d24;
 	cursor: pointer;
+}
+.mode-select-btn.disabled{
+	background-color: #412916;
+	color: #000;
+	cursor: not-allowed!important;
 }
