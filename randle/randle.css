@@ -30,6 +30,10 @@ body{
 	top:-14px;
 	left: calc((220px - 130px) / 2);
 }
+#modeName{
+	text-transform: uppercase;
+}
+
 #hint-div{
 	margin: 0.8em;
 	max-height: 70%;
@@ -40,15 +44,15 @@ body{
   grid-auto-flow: column;
 }
 .guess-div{
-	text-align: center;
+	text-align: center;    
+	display: flex;
+  margin: auto;
+  width: fit-content;
 }
 .input-table{
 	background-image: url("guess-bg.png");
 	background-size: 100% 100%;
-	margin-left: auto;
-	margin-right: auto;
-	margin-top: 0.8em;
-	margin-bottom: 0.8em;
+	margin-top: 1.5vh;
 	text-align: center;
 	vertical-align: middle;
 }
@@ -61,7 +65,7 @@ body{
 	width:2.5em!important;
 }
 .input-box{
-	font-size: 36pt;
+	font-size: 4vh;
 	font-weight: 700;
 	width: 2em;
 	height: 2em;
@@ -102,6 +106,32 @@ body{
 	width: 90%;
 	display: flex;
 	align-items: center;
+}
+
+.lying-hint{
+	margin-top: 1.5vh;
+	visibility: hidden;
+}
+.lying-hint-btn{
+	display: block;
+	background-color: #695747;
+  border: 1px solid #4C2C20;
+  border-radius: 3px;
+  width: 1.5em;
+  font-weight: 700;
+}
+.lying-hint-btn[data-hint="truth"]{
+	color: #73e703;
+
+}
+.lying-hint-btn[data-hint="unknown"]{
+  color: #fff;
+}
+.lying-hint-btn[data-hint="lie"]{
+  color: #fc4040;
+}
+.lying-hint-btn:not(.active){
+	opacity: 0.3;
 }
 
 #keyboard{

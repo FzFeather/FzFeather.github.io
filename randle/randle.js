@@ -11,22 +11,50 @@
 		mode: null,
 	};
 
-	function getCell(i){
-		return $('#answer-div div[data-pos="'+i+'"]');
+	function getCell(i, div=null){
+		if(div==null){
+			return $('#answer-div div[data-pos="'+i+'"]');
+		}else{
+			return $('div[data-pos="'+i+'"]', div);
+		}
 	}
 	var dictionary1 = null;
 	var dictionary2 = null;
+
+	// initialize dictionary
+	$.ajax({
+		url: './word1',
+		success: function(data){
+			dictionary1 = data.split(' ');
+		}
+	})
+	$.ajax({
+		url: './word2',
+		success: function(data){
+			dictionary2 = data.split(' ');
+		}
+	})
+
+
+	$('.mode-select-btn').click(function(){
+		modeSelectModal.hide();
+		startGame($(this).data('mode'));
+	})
 
 	function startGame(mode){
 		game.status = 1;
 		game.mode = mode;
 		game.keyword = dictionary1[Math.floor(Math.random()*dictionary1.length)];
+		$('#modeName').text(mode);
+		if(mode=="lying"){
+			$('.lying-hint').show()
+		}
 	}
 
-	function getWord(){
+	function getWord(div=null){
 		let word = "";
 		for(let i=1; i<=5; i++){
-			let char = getCell(i).text();
+			let char = getCell(i, div).text();
 			if(char.length == 0){
 				return null;
 			}
@@ -58,27 +86,41 @@
 				}
 			}
 		}
+		if(game.mode == 'lying' && word!=guess){
+			let lying = Math.random()>0.5;
+			if(lying){
+				for(let i=0; i<5; i++){
+					if(Math.random()>0.5){
+						verdict[i] = (verdict[i]+1)%3;
+					}else{
+						verdict[i] = (verdict[i]+2)%3;
+					}
+				}
+			}
+		}
 		return verdict;
 	}
 
 	function setKeyboard(guess, hint){
 		guess = guess.toUpperCase();
 		for(let i=0; i<5; i++){
-			let key = $('.keyboard-key[data-key="'+guess[i]+'"]')
-			if(hint[i] == 0){
+			let key = $('.keyboard-key[data-key="'+guess[i]+'"]');
+			// if(game.mode=="normal"){
+			if(parseInt(hint[i]) == 0){
 				if(!key.hasClass('answer-g') && !key.hasClass('answer-b') ){
 					key.addClass('answer-b');
 				}
-			}else if(hint[i] == 1){
+			}else if(parseInt(hint[i]) == 1){
 				key.removeClass('answer-b');
 				key.removeClass('answer-y');
 				key.addClass('answer-g');
-			}else{
+			}else if(parseInt(hint[i]) == 2){
 				if(!key.hasClass('answer-g')){
 					key.removeClass('answer-b');
 					key.addClass('answer-y');
 				}
 			}
+			// }
 		}
 	}
 
@@ -96,7 +138,8 @@
 		}
 
 		$("#answer-div .answer-box").removeClass('active')
-		let newDiv = $("#answer-div").clone();
+		let oldDiv = $("#answer-div")
+		let newDiv = oldDiv.clone(true);
 
 		let verdict = check(game.keyword, guessWord);
 		let allCorrect = true;
@@ -113,14 +156,19 @@
 		}
 		if(allCorrect) return;
 
-		$("#answer-div").attr('id', '');
+		oldDiv.attr('id', '');
 		$('div[data-pos]', newDiv).empty();
 		$('div[data-pos=1]', newDiv).addClass('active');
 		$('#hint-div').append(newDiv);
-		$(".answer-box", newDiv).click(clickFocus);
+		// $(".answer-box", newDiv).click(clickFocus);
 		wordPos = 1;
 		$("#hint-div").scrollTop($("#hint-div")[0].scrollHeight);
-		setKeyboard(guessWord, verdict);
+		if(game.mode == "normal"){
+			setKeyboard(guessWord, verdict);
+		}else if(game.mode == "lying"){
+			$('.lying-hint', oldDiv).css('visibility', 'visible');
+			$('.lying-hint', oldDiv).data('reply', verdict.join(''));
+		}
 	}
 
 	// Events
@@ -172,8 +220,18 @@
 			backspace();
 		}else if(e.keyCode == 13){
 			submitWord();
-		}else if(e.keyCode == 32){
-			
+		}else if(e.keyCode == 32 || e.keyCode == 39){
+			if(wordPos<5){
+				wordPos++;
+				$('#answer-div div[data-pos="'+(wordPos-1)+'"]').removeClass('active');
+				$('#answer-div div[data-pos="'+wordPos+'"]').addClass('active');
+			}
+		}else if(e.keyCode == 37){
+			if(wordPos>=2){
+				wordPos--;
+				$('#answer-div div[data-pos="'+(wordPos+1)+'"]').removeClass('active');
+				$('#answer-div div[data-pos="'+wordPos+'"]').addClass('active');
+			}
 		}
 	});
 
@@ -188,23 +246,29 @@
 
 	$('#submit-btn').click(submitWord);
 
-	$.ajax({
-		url: './word1',
-		success: function(data){
-			dictionary1 = data.split(' ');
+	
+	$('.lying-hint-btn').click(function(){
+		$(this).siblings('.lying-hint-btn').removeClass('active');
+		$(this).addClass('active');
+		$(".keyboard-key").removeClass('answer-b')
+						  .removeClass('answer-g')
+						  .removeClass('answer-y');
+		for(let lyingHint of $('.lying-hint')){
+			let word = getWord($(lyingHint).closest('.guess-div'));
+			let hint = $('.active', lyingHint).data('hint');
+			let reply = $(lyingHint).data('reply');
+			if(hint == "truth"){
+				setKeyboard(word, reply);
+			}else if(hint == "lie"){
+				let fakeReply = [-1,-1,-1,-1,-1];
+				for(let i=0; i<5; i++){
+					if(reply[i]=="0"){
+						fakeReply[i]=2;
+					}
+				}
+				setKeyboard(word, fakeReply);
+			}
 		}
-	})
-	$.ajax({
-		url: './word2',
-		success: function(data){
-			dictionary2 = data.split(' ');
-		}
-	})
-
-
-	$('.mode-select-btn').click(function(){
-		modeSelectModal.hide();
-		startGame($(this).data('mode'));
-	})
+	});
 
 })();
