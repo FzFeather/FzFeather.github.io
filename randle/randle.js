@@ -64,6 +64,11 @@
 	}
 
 	function check(word, guess){
+		if(game.mode == "flipping"){
+			let temp = word;
+			word = guess;
+			guess = temp;
+		}
 		let cw = [0, 0, 0, 0, 0];
 		let cg = [0, 0, 0, 0, 0];
 		verdict = [0, 0, 0, 0, 0];
@@ -101,7 +106,42 @@
 		return verdict;
 	}
 
-	function setKeyboard(guess, hint){
+	function setKeyboard(guess, hint, option={}){
+		if(game.mode=="lying"){
+			if(!option['truth'] || option['truth']=="unknown") return;
+			if(option['truth']=="lie"){
+
+				let fakeReply = [-1,-1,-1,-1,-1];
+				for(let i=0; i<5; i++){
+					if(parseInt(hint[i])==0){
+						fakeReply[i]=2;
+					}
+				}
+				hint = fakeReply;
+			}
+		}else if(game.mode=="flipping"){
+			let reply = [-1,-1,-1,-1,-1];
+			for(let i=0; i<5; i++){
+				if(parseInt(hint[i])==1){
+					// green stays green
+					reply[i]=1;
+				}else{
+					let presence = false;
+					for(let j=0; j<5; j++){
+						if(i==j) continue;
+						if(parseInt(hint[j])==2){
+							// Other place yellow
+							presence = true;
+							break;
+						}
+					}
+					if(!presence){
+						reply[i]=0;
+					}
+				}
+			}
+			hint = reply;
+		}
 		guess = guess.toUpperCase();
 		for(let i=0; i<5; i++){
 			let key = $('.keyboard-key[data-key="'+guess[i]+'"]');
@@ -154,25 +194,43 @@
 				allCorrect = false;
 			}
 		}
+		oldDiv.attr('id', '');
 		if(allCorrect) return;
 
-		oldDiv.attr('id', '');
 		$('div[data-pos]', newDiv).empty();
 		$('div[data-pos=1]', newDiv).addClass('active');
 		$('#hint-div').append(newDiv);
 		// $(".answer-box", newDiv).click(clickFocus);
 		wordPos = 1;
 		$("#hint-div").scrollTop($("#hint-div")[0].scrollHeight);
-		if(game.mode == "normal"){
-			setKeyboard(guessWord, verdict);
-		}else if(game.mode == "lying"){
+		setKeyboard(guessWord, verdict);
+		if(game.mode == "lying"){
 			$('.lying-hint', oldDiv).css('visibility', 'visible');
 			$('.lying-hint', oldDiv).data('reply', verdict.join(''));
+		}else if(game.mode == "not"){
+			$('.keyboard-key').removeClass('not');
+			for(let i=0; i<5; i++){
+				$('.keyboard-key[data-key="'+guessWord[i].toUpperCase()+'"]').addClass('not');
+			}
+		}else if(game.mode == "fixing"){
+			for(let i=0; i<5; i++){
+				if(verdict[i]==1){
+					getCell(i+1).addClass("fixing")
+								.text(guessWord[i].toUpperCase())
+								.addClass("answer-g");
+				}
+			}
 		}
 	}
 
 	// Events
 	function inputChar(char){
+		if($('.keyboard-key[data-key="'+char.toUpperCase()+'"]').hasClass('not')){
+			$('.keyboard-key[data-key="'+char.toUpperCase()+'"]').addClass('shaking');
+			setTimeout(() => {
+			$('.keyboard-key[data-key="'+char.toUpperCase()+'"]').removeClass('shaking')}, 820);
+			return;
+		}
 		if (wordPos<=5) {
 			$('#answer-div div[data-pos="'+wordPos+'"]').text(char.toUpperCase());
 
@@ -257,17 +315,8 @@
 			let word = getWord($(lyingHint).closest('.guess-div'));
 			let hint = $('.active', lyingHint).data('hint');
 			let reply = $(lyingHint).data('reply');
-			if(hint == "truth"){
-				setKeyboard(word, reply);
-			}else if(hint == "lie"){
-				let fakeReply = [-1,-1,-1,-1,-1];
-				for(let i=0; i<5; i++){
-					if(reply[i]=="0"){
-						fakeReply[i]=2;
-					}
-				}
-				setKeyboard(word, fakeReply);
-			}
+			if(word==null || reply===undefined) continue;
+			setKeyboard(word, reply, {"truth":hint});
 		}
 	});
 
