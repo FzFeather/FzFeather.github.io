@@ -9,6 +9,7 @@
 		status: 0,
 		keyword: null,
 		mode: null,
+		guessWords: [],
 	};
 
 	function getCell(i, div=null){
@@ -145,7 +146,6 @@
 		guess = guess.toUpperCase();
 		for(let i=0; i<5; i++){
 			let key = $('.keyboard-key[data-key="'+guess[i]+'"]');
-			// if(game.mode=="normal"){
 			if(parseInt(hint[i]) == 0){
 				if(!key.hasClass('answer-g') && !key.hasClass('answer-b') ){
 					key.addClass('answer-b');
@@ -160,7 +160,6 @@
 					key.addClass('answer-y');
 				}
 			}
-			// }
 		}
 	}
 
@@ -171,29 +170,66 @@
 		}
 		// Check word validity
 		if(!dictionary2.includes(guessWord)){
+			$('#alert-message').text('Not in word list.')
 			invalidToast.show();
 			return;
 		}else{
 			invalidToast.hide();
 		}
+		// Check for fixing
+		if(game.mode == "fixing" && game.guessWords.length > 0){
+			let lastGuess = game.guessWords[game.guessWords.length-1];
+			let yellows = [];
+			for(let i=0; i<5; i++){
+				if(lastGuess.hint[i] == 2){
+					yellows.push(lastGuess.word[i]);
+				}
+			}
+			for(let i=0; i<5; i++){
+				let pos = yellows.indexOf(guessWord[i])
+				if(pos != -1){
+					yellows.splice(pos, 1);
+				}
+			}
+			if(yellows.length != 0){
+				$('#alert-message').text('In FIXING mode, you need to have same letters as previous green in the exact same position before, and have same letters as previous yellow in random position.')
+				invalidToast.show();
+				return;
+			}else{
+				invalidToast.hide();
+			}
+		}
 
-		$("#answer-div .answer-box").removeClass('active')
-		let oldDiv = $("#answer-div")
+		// Accept Word
+
+		let oldDiv = $("#answer-div");
+		$(".answer-box", oldDiv).removeClass('active');
 		let newDiv = oldDiv.clone(true);
 
 		let verdict = check(game.keyword, guessWord);
-		let allCorrect = true;
+
+
+		let allCorrect = (game.keyword==guessWord);
+
 		for(let i=1; i<=5; i++){
+			if(game.mode == "meteorite" && !allCorrect){
+				if(Math.random()>0.75){
+					getCell(i).addClass('meteorite');
+					verdict[i-1] = -1;
+					continue;
+				}
+			}
 			if(verdict[i-1] == 0){
 				getCell(i).addClass('answer-b');
-				allCorrect = false;
 			}else if(verdict[i-1] == 1){
 				getCell(i).addClass('answer-g');
-			}else{
+			}else if(verdict[i-1] == 2){
 				getCell(i).addClass('answer-y');
-				allCorrect = false;
 			}
 		}
+
+		game.guessWords.push({"word":guessWord, "hint":verdict});
+
 		oldDiv.attr('id', '');
 		if(allCorrect) return;
 
@@ -221,9 +257,42 @@
 				}
 			}
 		}
+		if(getCell(1).hasClass('fixing')){
+			gotoNextCell();
+		}
 	}
 
 	// Events
+	function gotoPrevCell(){
+		let lastWordPos = wordPos;
+		if(wordPos>=2){
+			wordPos--;
+			while(getCell(wordPos).hasClass("fixing")){
+				wordPos--;
+				if(wordPos<1){
+					wordPos = lastWordPos;
+					break;
+				}
+			}
+			$('#answer-div div[data-pos="'+lastWordPos+'"]').removeClass('active');
+			$('#answer-div div[data-pos="'+wordPos+'"]').addClass('active');
+		}
+	}
+	function gotoNextCell(){
+		let lastWordPos = wordPos;
+		if(wordPos<5){
+			wordPos++;
+			while(getCell(wordPos).hasClass("fixing")){
+				wordPos++;
+				if(wordPos>5){
+					wordPos = lastWordPos;
+					break;
+				}
+			}
+			$('#answer-div div[data-pos="'+lastWordPos+'"]').removeClass('active');
+			$('#answer-div div[data-pos="'+wordPos+'"]').addClass('active');
+		}
+	}
 	function inputChar(char){
 		if($('.keyboard-key[data-key="'+char.toUpperCase()+'"]').hasClass('not')){
 			$('.keyboard-key[data-key="'+char.toUpperCase()+'"]').addClass('shaking');
@@ -234,12 +303,7 @@
 		if (wordPos<=5) {
 			$('#answer-div div[data-pos="'+wordPos+'"]').text(char.toUpperCase());
 
-			if(wordPos<=4){
-				wordPos++;
-
-				$('#answer-div div[data-pos="'+(wordPos-1)+'"]').removeClass('active');
-				$('#answer-div div[data-pos="'+wordPos+'"]').addClass('active');
-			}
+			gotoNextCell();
 		}
 	}
 	function backspace(){
@@ -248,10 +312,8 @@
 			$('#answer-div div[data-pos="'+(wordPos+1)+'"]').removeClass('active');
 			$('#answer-div div[data-pos="'+wordPos+'"]').addClass('active');
 		}else if(wordPos>=2){
-			wordPos--;
+			gotoPrevCell();
 			$('#answer-div div[data-pos="'+wordPos+'"]').text('');
-			$('#answer-div div[data-pos="'+(wordPos+1)+'"]').removeClass('active');
-			$('#answer-div div[data-pos="'+wordPos+'"]').addClass('active');
 		}
 	}
 	var wordPos = 1;
@@ -279,22 +341,15 @@
 		}else if(e.keyCode == 13){
 			submitWord();
 		}else if(e.keyCode == 32 || e.keyCode == 39){
-			if(wordPos<5){
-				wordPos++;
-				$('#answer-div div[data-pos="'+(wordPos-1)+'"]').removeClass('active');
-				$('#answer-div div[data-pos="'+wordPos+'"]').addClass('active');
-			}
+			gotoNextCell();
 		}else if(e.keyCode == 37){
-			if(wordPos>=2){
-				wordPos--;
-				$('#answer-div div[data-pos="'+(wordPos+1)+'"]').removeClass('active');
-				$('#answer-div div[data-pos="'+wordPos+'"]').addClass('active');
-			}
+			gotoPrevCell();
 		}
 	});
 
 	function clickFocus(){
 		if($(this).closest("#answer-div").length==0) return;
+		if($(this).hasClass("fixing")) return;
 		$(".answer-box").removeClass('active');
 		$(this).addClass('active');
 		wordPos = parseInt($(this).data('pos'));

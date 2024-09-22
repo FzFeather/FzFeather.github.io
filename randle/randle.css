@@ -104,6 +104,11 @@ body{
 	height: 100%;
 	background-size: 22% 22%;
 }
+.answer-box.meteorite{
+	background: url('hole.png');
+	background-size: cover;
+	border: none!important;
+}
 .answer-b{
 	background-color: gray!important;
 }
