@@ -57,7 +57,7 @@ body{
 .input-table{
 	background-image: url("guess-bg.png");
 	background-size: 100% 100%;
-	margin-top: 1.5vh;
+	margin: 1.5vh 1em 0px 1em;
 	text-align: center;
 	vertical-align: middle;
 }
@@ -312,4 +312,11 @@ body{
 	background-color: #412916;
 	color: #000;
 	cursor: not-allowed!important;
+}
+.mode-select-btn:not(.disabled){
+	color: yellow;
+	font-weight: 700;
+	-webkit-text-stroke-width: 6px;
+	-webkit-text-stroke-color: black;
+	paint-order: stroke fill;
 }

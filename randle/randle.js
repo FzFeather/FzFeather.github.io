@@ -49,6 +49,9 @@
 		$('#modeName').text(mode);
 		if(mode=="lying"){
 			$('.lying-hint').show()
+		}else if(mode=="cyclic"){
+			let pos=Math.floor(Math.random()*5);
+			game.keyword = game.keyword.substring(pos)+game.keyword.substring(0,pos);
 		}
 	}
 
@@ -169,12 +172,30 @@
 			return;
 		}
 		// Check word validity
-		if(!dictionary2.includes(guessWord)){
-			$('#alert-message').text('Not in word list.')
-			invalidToast.show();
-			return;
+		if(game.mode != "cyclic"){
+			if(!dictionary2.includes(guessWord)){
+				$('#alert-message').text('Not in word list.');
+				invalidToast.show();
+				return;
+			}else{
+				invalidToast.hide();
+			}
 		}else{
-			invalidToast.hide();
+			let wordValid = false;
+			for(let i=0; i<5; i++){
+				let cyclic = guessWord.substring(i)+guessWord.substring(0,i);
+				if(dictionary2.includes(cyclic)){
+					wordValid = true;
+					break;
+				}
+			}
+			if(!wordValid){
+				$('#alert-message').text('Not in word list.');
+				invalidToast.show();
+				return;
+			}else{
+				invalidToast.hide();
+			}
 		}
 		// Check for fixing
 		if(game.mode == "fixing" && game.guessWords.length > 0){
