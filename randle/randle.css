@@ -41,7 +41,7 @@ body{
 /*	overflow-y: auto;*/
 /*}.grid {*/
   display: grid;
-  grid-template-rows: repeat(5, 1fr);
+  grid-template-rows: auto;
   grid-auto-flow: column;
 }
 .guess-div{
