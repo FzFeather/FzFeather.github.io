@@ -343,7 +343,7 @@
 			if(verdict[i-1] >= 0){
 				getCell(i).addClass('colored')
 						  .css('--color1',colorArray[verdict[i-1]])
-						  .css('animation-delay', (i*0.3)+'s');
+						  .css('animation-delay', ((i-1)*0.3)+'s');
 			}
 
 			if(game.mode == "double"){
@@ -506,9 +506,9 @@
 	$('.lying-hint-btn').click(function(){
 		$(this).siblings('.lying-hint-btn').removeClass('active');
 		$(this).addClass('active');
-		$(".keyboard-key").removeClass('answer-b')
-						  .removeClass('answer-g')
-						  .removeClass('answer-y');
+		$(".keyboard-key").removeClass('colored')
+				  		  .attr('data-transparent1', null)
+				  		  .attr('style', null);
 		for(let lyingHint of $('.lying-hint')){
 			let word = getWord($(lyingHint).closest('.guess-div'));
 			let hint = $('.active', lyingHint).data('hint');
