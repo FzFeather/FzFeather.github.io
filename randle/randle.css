@@ -112,6 +112,18 @@ body{
 	background: url('hole.png');
 	background-size: cover;
 	border: none!important;
+	background-size: 0%;
+	background-position: center;
+	background-repeat: no-repeat;
+	animation: meteorite 0.5s linear forwards;
+}
+@keyframes meteorite{
+	0% {
+		background-size: 0px 0px;
+	}
+	100% {
+		background-size: 100% 100%;
+	}
 }
 .answer-b{
 	background-color: gray!important;
@@ -121,6 +133,24 @@ body{
 }
 .answer-g{
 	background-color: green!important;
+}
+.flip{
+	animation: flip 0.6s linear forwards;
+}
+@keyframes flip {
+  0% {
+    transform: scaleX(1);
+  }
+
+  50% {
+    background: none;
+    transform: scaleX(0);
+  }
+
+  100% {
+    transform: scaleX(1);
+    background: var(--color1);
+  }
 }
 
 #input-area{
