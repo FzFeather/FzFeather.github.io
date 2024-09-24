@@ -266,20 +266,22 @@
 			if(game.keyword==guessWord){
 				game.correct1 = true;
 				for(let key of $('.keyboard-key')){
-					if(guessWord.includes($(key).data('key'))){
+					if(guessWord.toUpperCase().includes($(key).data('key'))){
 						$(key).css('--color1', 'green');
 					}else{
-						$(key).css('--color1', 'grey');
+						$(key).css('--color1', 'grey')
+							  .attr('data-transparent1',true);
 					}
 				}
 			}
 			if(game.keyword2==guessWord){
 				game.correct2 = true;
 				for(let key of $('.keyboard-key')){
-					if(guessWord.includes($(key).data('key'))){
+					if(guessWord.toUpperCase().includes($(key).data('key'))){
 						$(key).css('--color2', 'green');
 					}else{
-						$(key).css('--color2', 'grey');
+						$(key).css('--color2', 'grey')
+							  .attr('data-transparent2',true);
 					}
 				}
 			}
@@ -290,30 +292,33 @@
 			if(game.keyword==guessWord){
 				game.correct1 = true;
 				for(let key of $('.keyboard-key')){
-					if(guessWord.includes($(key).data('key'))){
+					if(guessWord.toUpperCase().includes($(key).data('key'))){
 						$(key).css('--color1', 'green');
 					}else{
-						$(key).css('--color1', 'grey');
+						$(key).css('--color1', 'grey')
+							  .attr('data-transparent1',true);
 					}
 				}
 			}
 			if(game.keyword2==guessWord){
 				game.correct2 = true;
 				for(let key of $('.keyboard-key')){
-					if(guessWord.includes($(key).data('key'))){
+					if(guessWord.toUpperCase().includes($(key).data('key'))){
 						$(key).css('--color2', 'green');
 					}else{
-						$(key).css('--color2', 'grey');
+						$(key).css('--color2', 'grey')
+							  .attr('data-transparent2',true);
 					}
 				}
 			}
 			if(game.keyword3==guessWord){
 				game.correct3 = true;
 				for(let key of $('.keyboard-key')){
-					if(guessWord.includes($(key).data('key'))){
+					if(guessWord.toUpperCase().includes($(key).data('key'))){
 						$(key).css('--color3', 'green');
 					}else{
-						$(key).css('--color3', 'grey');
+						$(key).css('--color3', 'grey')
+							  .attr('data-transparent3',true);
 					}
 				}
 			}
