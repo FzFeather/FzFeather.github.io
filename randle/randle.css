@@ -45,7 +45,6 @@ body{
 	display: flex;
 	flex-direction: column;
 	flex-wrap: wrap;
-	align-content: center;
 	max-height: calc(100vh - 310px - 3em);
 }
 .guess-div{
