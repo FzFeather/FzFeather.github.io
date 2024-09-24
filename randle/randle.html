@@ -14,6 +14,12 @@
 			<span id="modeName">NORMAL</span>
 		</div>
 	</div>
+	<div id="word-selection" style="display: none;">
+		<div class="word-filter active" data-word="all">ALL</div>
+		<div class="word-filter" data-word="1">WORD 1</div>
+		<div class="word-filter" data-word="2">WORD 2</div>
+		<div class="word-filter" data-word="3" style="display: none;">WORD 3</div>
+	</div>
 	<div id="hint-div">
 		<div class="guess-div" id="answer-div">
 			<table class="input-table">
@@ -141,12 +147,12 @@
         		</div>
         	</div>
         	<div class="col-6 p-0">
-        		<div class="mode-select-btn disabled" data-mode="double">
+        		<div class="mode-select-btn" data-mode="double">
         			DOUBLE
         		</div>
         	</div>
         	<div class="col-6 p-0">
-        		<div class="mode-select-btn disabled" data-mode="triple">
+        		<div class="mode-select-btn" data-mode="triple">
         			TRIPLE
         		</div>
         	</div>

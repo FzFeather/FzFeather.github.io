@@ -52,6 +52,15 @@
 		}else if(mode=="cyclic"){
 			let pos=Math.floor(Math.random()*5);
 			game.keyword = game.keyword.substring(pos)+game.keyword.substring(0,pos);
+		}else if(mode=="double" || mode=="triple"){
+			$('#word-selection').show();
+			$('.answer-box').attr('data-show', mode);
+			$('.keyboard-key').attr('data-show', mode);
+			game.keyword2 = dictionary1[Math.floor(Math.random()*dictionary1.length)];
+			if(mode=="triple"){
+				$('#word-selection [data-word="3"]').show();
+				game.keyword3 = dictionary1[Math.floor(Math.random()*dictionary1.length)];
+			}
 		}
 	}
 
@@ -111,6 +120,7 @@
 	}
 
 	function setKeyboard(guess, hint, option={}){
+		let wordId = option.word ?? 1;
 		if(game.mode=="lying"){
 			if(!option['truth'] || option['truth']=="unknown") return;
 			if(option['truth']=="lie"){
@@ -150,17 +160,16 @@
 		for(let i=0; i<5; i++){
 			let key = $('.keyboard-key[data-key="'+guess[i]+'"]');
 			if(parseInt(hint[i]) == 0){
-				if(!key.hasClass('answer-g') && !key.hasClass('answer-b') ){
-					key.addClass('answer-b');
+				if(key.css('--color'+wordId) != 'green' && key.css('--color'+wordId) != 'yellow'){
+					key.addClass('colored')
+					   .css('--color'+wordId, 'grey')
+					   .attr('data-transparent'+wordId, true);
 				}
 			}else if(parseInt(hint[i]) == 1){
-				key.removeClass('answer-b');
-				key.removeClass('answer-y');
-				key.addClass('answer-g');
+				key.addClass('colored').css('--color'+wordId, 'green');
 			}else if(parseInt(hint[i]) == 2){
-				if(!key.hasClass('answer-g')){
-					key.removeClass('answer-b');
-					key.addClass('answer-y');
+				if(key.css('--color'+wordId) != 'green'){
+					key.addClass('colored').css('--color'+wordId, 'yellow');
 				}
 			}
 		}
@@ -228,9 +237,94 @@
 		let newDiv = oldDiv.clone(true);
 
 		let verdict = check(game.keyword, guessWord);
+		let verdict2, verdict3;
+		if(game.mode == "double"){
+			verdict2 = check(game.keyword2, guessWord);
+			if(game.correct1){
+				verdict = [1,1,1,1,1];
+			}
+			if(game.correct2){
+				verdict2 = [1,1,1,1,1];
+			}
+		}
+		if(game.mode == "triple"){
+			verdict2 = check(game.keyword2, guessWord);
+			verdict3 = check(game.keyword3, guessWord);
+			if(game.correct1){
+				verdict = [1,1,1,1,1];
+			}
+			if(game.correct2){
+				verdict2 = [1,1,1,1,1];
+			}
+			if(game.correct3){
+				verdict3 = [1,1,1,1,1];
+			}
+		}
 
+		let allCorrect = false;
+		if(game.mode == "double"){
+			if(game.keyword==guessWord){
+				game.correct1 = true;
+				for(let key of $('.keyboard-key')){
+					if(guessWord.includes($(key).data('key'))){
+						$(key).css('--color1', 'green');
+					}else{
+						$(key).css('--color1', 'grey');
+					}
+				}
+			}
+			if(game.keyword2==guessWord){
+				game.correct2 = true;
+				for(let key of $('.keyboard-key')){
+					if(guessWord.includes($(key).data('key'))){
+						$(key).css('--color2', 'green');
+					}else{
+						$(key).css('--color2', 'grey');
+					}
+				}
+			}
+			if(game.correct1 && game.correct2){
+				allCorrect = true;
+			}
+		}else if(game.mode == "triple"){
+			if(game.keyword==guessWord){
+				game.correct1 = true;
+				for(let key of $('.keyboard-key')){
+					if(guessWord.includes($(key).data('key'))){
+						$(key).css('--color1', 'green');
+					}else{
+						$(key).css('--color1', 'grey');
+					}
+				}
+			}
+			if(game.keyword2==guessWord){
+				game.correct2 = true;
+				for(let key of $('.keyboard-key')){
+					if(guessWord.includes($(key).data('key'))){
+						$(key).css('--color2', 'green');
+					}else{
+						$(key).css('--color2', 'grey');
+					}
+				}
+			}
+			if(game.keyword3==guessWord){
+				game.correct3 = true;
+				for(let key of $('.keyboard-key')){
+					if(guessWord.includes($(key).data('key'))){
+						$(key).css('--color3', 'green');
+					}else{
+						$(key).css('--color3', 'grey');
+					}
+				}
+			}
+			if(game.correct1 && game.correct2 && game.correct3){
+				allCorrect = true;
+			}
+		}else{
+			allCorrect = (game.keyword==guessWord);
+		}
 
-		let allCorrect = (game.keyword==guessWord);
+		let colorArray = ['grey', 'green', 'yellow'];
 
 		for(let i=1; i<=5; i++){
 			if(game.mode == "meteorite" && !allCorrect){
@@ -240,12 +334,26 @@
 					continue;
 				}
 			}
-			if(verdict[i-1] == 0){
-				getCell(i).addClass('answer-b');
-			}else if(verdict[i-1] == 1){
-				getCell(i).addClass('answer-g');
-			}else if(verdict[i-1] == 2){
-				getCell(i).addClass('answer-y');
+			
+			if(verdict[i-1] >= 0){
+				getCell(i).addClass('colored')
+						  .css('--color1',colorArray[verdict[i-1]])
+						  .css('animation-delay', (i*0.3)+'s');
+			}
+
+			if(game.mode == "double"){
+				let displayMode = $('.word-filter.active').data('word');
+				if(verdict2[i-1] >= 0){
+					getCell(i).css('--color2',colorArray[verdict2[i-1]]);
+				}
+			}else if(game.mode == "triple"){
+				let displayMode = $('.word-filter.active').data('word');
+				if(verdict2[i-1] >= 0){
+					getCell(i).css('--color2',colorArray[verdict2[i-1]]);
+				}
+				if(verdict3[i-1] >= 0){
+					getCell(i).css('--color3',colorArray[verdict3[i-1]]);
+				}
 			}
 		}
 
@@ -260,7 +368,8 @@
 		// $(".answer-box", newDiv).click(clickFocus);
 		wordPos = 1;
 		$("#hint-div").scrollTop($("#hint-div")[0].scrollHeight);
-		setKeyboard(guessWord, verdict);
+		if(!game.correct1)
+			setKeyboard(guessWord, verdict);
 		if(game.mode == "lying"){
 			$('.lying-hint', oldDiv).css('visibility', 'visible');
 			$('.lying-hint', oldDiv).data('reply', verdict.join(''));
@@ -277,6 +386,14 @@
 								.addClass("answer-g");
 				}
 			}
+		}else if(game.mode == "double"){
+			if(!game.correct2)
+				setKeyboard(guessWord, verdict2, {'word': 2});
+		}else if(game.mode == "triple"){
+			if(!game.correct2)
+				setKeyboard(guessWord, verdict2, {'word': 2});
+			if(!game.correct3)
+				setKeyboard(guessWord, verdict3, {'word': 3});
 		}
 		if(getCell(1).hasClass('fixing')){
 			gotoNextCell();
@@ -395,5 +512,17 @@
 			setKeyboard(word, reply, {"truth":hint});
 		}
 	});
+	$('.word-filter').click(function(){
+		$('.word-filter').removeClass('active');
+		$(this).addClass('active');
+		if(game.mode == "double" || game.mode == "triple"){
+			let filter = $(this).data('word');
+			if(filter == "all"){
+				$('[data-show]').attr('data-show', game.mode);
+			}else{
+				$('[data-show]').attr('data-show', 'word'+filter);
+			}
+		}
+	})
 
 })();
