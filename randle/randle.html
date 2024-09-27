@@ -14,6 +14,34 @@
 			<span id="modeName">NORMAL</span>
 		</div>
 	</div>
+
+	<div id="mixingPanel" style="display: none;">
+		<div class="mixingRow">
+			<div class="colorBox" data-color="green"></div>
+			<div>→</div>
+			<div class="colorBox colorSelect" data-from="green" data-color="unknown"></div>
+		</div>
+		<div class="mixingRow">
+			<div class="colorBox" data-color="yellow"></div>
+			<div>→</div>
+			<div class="colorBox colorSelect" data-from="yellow" data-color="unknown"></div>
+		</div>
+		<div class="mixingRow">
+			<div class="colorBox" data-color="black"></div>
+			<div>→</div>
+			<div class="colorBox colorSelect" data-from="black" data-color="unknown"></div>
+		</div>
+		<div id="colorSelector" style="display: none;">
+			<div class="mixingRow"><div class="colorBox" data-color="green"></div></div>
+			<div class="mixingRow"><div class="colorBox" data-color="yellow"></div></div>
+			<div class="mixingRow"><div class="colorBox" data-color="black"></div></div>
+			<div class="mixingRow"><div class="colorBox" data-color="unknown"></div></div>
+		</div>
+		<label class="switch">
+		  <input type="checkbox" id="mixingCheck" class="chk">
+		  <span class="slider"></span>
+		</label>
+	</div>
 	<div id="word-selection" style="display: none;">
 		<div class="word-filter active" data-word="all">ALL</div>
 		<div class="word-filter" data-word="1">WORD 1</div>
