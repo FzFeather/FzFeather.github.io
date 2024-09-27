@@ -135,21 +135,46 @@ body{
 	background-color: green!important;
 }
 
-.colored[data-show="word1"]{
-	background-color: var(--color1);
-}
-.colored[data-show="word2"]{
-	background-color: var(--color2);
-}
-.colored[data-show="word3"]{
-	background-color: var(--color3);
-}
-.colored[data-show="double"]{
+.colored.colored-double{
 	background: linear-gradient(var(--color1) 50%, var(--color2) 50%);
+	transition: all 0.5s;
 }
-.colored[data-show="triple"]{
+.colored.colored-double[data-show="all"]{
+	background-size: 100% 100%;
+	background-position: center;
+}
+.colored.colored-double[data-show="word1"]{
+	background-size: 200% 200%;
+	background-position: top;
+}
+.colored.colored-double[data-show="word2"]{
+	background-size: 200% 200%;
+	background-position: bottom;
+}
+
+
+.colored.colored-triple{
 	background: linear-gradient(var(--color1) 33%, var(--color2) 33%, var(--color2) 67%, var(--color3) 67%);
+	background-position: center;
+	transition: all 0.5s;
 }
+.colored.colored-triple[data-show="all"]{
+	background-size: 100% 100%;
+	background-position: center;
+}
+.colored.colored-triple[data-show="word1"]{
+	background-size: 300% 300%;
+	background-position: top;
+}
+.colored.colored-triple[data-show="word2"]{
+	background-size: 300% 300%;
+	background-position: center;
+}
+.colored.colored-triple[data-show="word3"]{
+	background-size: 300% 300%;
+	background-position: bottom;
+}
+
 
 .answer-box.colored:not([data-show]){
 	animation: flip 0.6s linear forwards;
