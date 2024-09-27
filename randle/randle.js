@@ -61,6 +61,8 @@
 				$('#word-selection [data-word="3"]').show();
 				game.keyword3 = dictionary1[Math.floor(Math.random()*dictionary1.length)];
 			}
+		}else if(mode == "mixing"){
+			$('#mixingPanel').show();
 		}
 	}
 
@@ -529,5 +531,48 @@
 			}
 		}
 	})
+
+	$('.colorSelect').click(function(e){
+		$('#colorSelector').show();
+		$('.colorSelect').removeClass('active');
+		$(this).addClass('active');
+		e.stopPropagation();
+	})
+	$('#colorSelector .colorBox').click(function(e){
+		// no change
+		if($('.colorSelect.active').attr('data-color') == $(this).data('color')) return;
+		console.log($('.colorSelect.active').attr('data-color'), $(this).data('color'));
+
+
+		let sameColor = $('.colorSelect[data-color="'+$(this).data('color')+'"]');
+
+		$('.colorSelect.active').attr("data-color", $(this).data('color'));
+		
+		// Check same color
+		if(sameColor.length > 0 && $(this).data('color') != "unknown"){
+			if($('.colorSelect[data-color="unknown"]').length > 0){
+				sameColor.attr('data-color', 'unknown');
+			}else{
+				for(let c of ['black', 'yellow', 'green']){
+					if($('.colorSelect[data-color="'+c+'"]').length == 0){
+						sameColor.attr('data-color', c);
+						break;
+					}
+				}
+			}
+		}
+
+		$('.colorSelect').removeClass('active');
+		$('#colorSelector').hide();
+	});
+	$(document).click(function(e){
+		var container = $("#colorSelector");
+ 
+	    // If the target of the click isn't the container
+	    if(!container.is(e.target) && container.has(e.target).length === 0){
+			$('.colorSelect').removeClass('active');
+			$('#colorSelector').hide();
+	    }
+	});
 
 })();
