@@ -54,8 +54,8 @@
 			game.keyword = game.keyword.substring(pos)+game.keyword.substring(0,pos);
 		}else if(mode=="double" || mode=="triple"){
 			$('#word-selection').show();
-			$('.answer-box').attr('data-show', mode);
-			$('.keyboard-key').attr('data-show', mode);
+			$('.answer-box').addClass('colored-'+mode).attr('data-show', 'all');
+			$('.keyboard-key').addClass('colored-'+mode).attr('data-show', 'all');
 			game.keyword2 = dictionary1[Math.floor(Math.random()*dictionary1.length)];
 			if(mode=="triple"){
 				$('#word-selection [data-word="3"]').show();
@@ -523,7 +523,7 @@
 		if(game.mode == "double" || game.mode == "triple"){
 			let filter = $(this).data('word');
 			if(filter == "all"){
-				$('[data-show]').attr('data-show', game.mode);
+				$('[data-show]').attr('data-show', 'all');
 			}else{
 				$('[data-show]').attr('data-show', 'word'+filter);
 			}
