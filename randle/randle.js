@@ -52,7 +52,7 @@
 		}else if(mode=="cyclic"){
 			let pos=Math.floor(Math.random()*5);
 			game.keyword = game.keyword.substring(pos)+game.keyword.substring(0,pos);
-		}else if(mode=="double" || mode=="triple"){
+		}else if(mode=="double" || mode=="triple" || mode=="puppet"){
 			$('#word-selection').show();
 			$('.answer-box').addClass('colored-'+mode).attr('data-show', 'all');
 			$('.keyboard-key').addClass('colored-'+mode).attr('data-show', 'all');
@@ -62,6 +62,11 @@
 				game.keyword3 = dictionary1[Math.floor(Math.random()*dictionary1.length)];
 			}
 		}else if(mode == "mixing"){
+			// shuffling
+			game.mixingDict = [-1,-1,-1];
+			game.mixingDict[0] = Math.floor(Math.random()*3);
+			game.mixingDict[1] = (game.mixingDict[0]+Math.floor(Math.random()*2)+1)%3;
+			game.mixingDict[2] = (3-game.mixingDict[0]-game.mixingDict[1])%3;
 			$('#mixingPanel').show();
 		}
 	}
@@ -157,6 +162,8 @@
 				}
 			}
 			hint = reply;
+		}else if(game.mode=="mixing"){
+			return;
 		}
 		guess = guess.toUpperCase();
 		for(let i=0; i<5; i++){
@@ -334,34 +341,46 @@
 		let colorArray = ['grey', 'green', 'yellow'];
 
 		for(let i=1; i<=5; i++){
+			let cell = getCell(i);
 			if(game.mode == "meteorite" && !allCorrect){
 				if(Math.random()>0.75){
-					getCell(i).addClass('meteorite');
+					cell.addClass('meteorite');
 					verdict[i-1] = -1;
 					continue;
 				}
 			}
+			if(game.mode == "mixing"){
+				verdict[i-1] = game.mixingDict[verdict[i-1]];
+			}
 			
-			if(verdict[i-1] >= 0){
-				getCell(i).addClass('colored')
-						  .css('--color1',colorArray[verdict[i-1]])
-						  .css('animation-delay', ((i-1)*0.3)+'s');
-			}
+			// Give color
+			setTimeout(function(){
+				cell.attr('data-animation', 'flip-in');
 
-			if(game.mode == "double"){
-				let displayMode = $('.word-filter.active').data('word');
-				if(verdict2[i-1] >= 0){
-					getCell(i).css('--color2',colorArray[verdict2[i-1]]);
-				}
-			}else if(game.mode == "triple"){
-				let displayMode = $('.word-filter.active').data('word');
-				if(verdict2[i-1] >= 0){
-					getCell(i).css('--color2',colorArray[verdict2[i-1]]);
-				}
-				if(verdict3[i-1] >= 0){
-					getCell(i).css('--color3',colorArray[verdict3[i-1]]);
-				}
-			}
+				setTimeout(function(){
+
+					if(verdict[i-1] >= 0){
+						cell.addClass('colored')
+								  .css('--color1',colorArray[verdict[i-1]]);
+					}
+
+					if(game.mode == "double"){
+						let displayMode = $('.word-filter.active').data('word');
+						if(verdict2[i-1] >= 0){
+							cell.css('--color2',colorArray[verdict2[i-1]]);
+						}
+					}else if(game.mode == "triple"){
+						let displayMode = $('.word-filter.active').data('word');
+						if(verdict2[i-1] >= 0){
+							cell.css('--color2',colorArray[verdict2[i-1]]);
+						}
+						if(verdict3[i-1] >= 0){
+							cell.css('--color3',colorArray[verdict3[i-1]]);
+						}
+					}
+					cell.attr('data-animation', 'flip-out');
+				}, 400);
+			}, (i-1)*300);
 		}
 
 		game.guessWords.push({"word":guessWord, "hint":verdict});
