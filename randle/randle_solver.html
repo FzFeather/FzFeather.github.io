@@ -75,6 +75,22 @@
 #word-list{
 	text-align: justify;
 }
+.alphabet-stat-card{
+	display: inline-block;
+	margin: 5px;
+	width:4.5em;
+	text-align: center;
+}
+.alphabet-stat-alphabet{
+	font-size: 24px;
+	padding: 0!important;
+	text-transform: uppercase;
+	background-color: lightgreen;
+}
+.alphabet-stat-alphabet-empty{
+	background-color: lightgrey;
+}
+}
 </style>
 <body>
 	<div style="text-align: center;">
@@ -243,26 +259,56 @@
 		}
 		for(var word of result){
 			for(let i=0; i<5; i++){
-				alphabetStat[word.charAt(i)] += 1
+				if(!word.substring(0,i).includes(word.charAt(i))){
+					alphabetStat[word.charAt(i)] += 1
+				}
 			}
 		}
 		$('#word-list').text(result.join(' '))
-		$('#alphabetStat').text(JSON.stringify(alphabetStat).replaceAll(',', ', '))
+
+		// stat print
+
+		let sortedStat = [];
+		for (var alphabet in alphabetStat) {
+		    sortedStat.push([alphabet, alphabetStat[alphabet]]);
+		}
+
+		sortedStat.sort(function(a, b) {
+		    return b[1] - a[1];
+		});
+		$('#alphabetStat').empty();
+		for(var s of sortedStat){
+			let percentage = (s[1]/result.length*100).toFixed(2)+'% ';
+			let card = $('<div class="card alphabet-stat-card">')
+				.append($('<div class="alphabet-stat-alphabet card-header">').text(s[0]))
+				.append($('<div>').text(percentage));
+			if(s[1] == 0){
+				$('.alphabet-stat-alphabet', card).addClass('alphabet-stat-alphabet-empty') 
+			}
+			$('#alphabetStat').append(card)
+
+		}
 	}
 
 
 	var activeCell = null;
 	// Events
 	function gotoPrevCell(){
-		let lastWordPos = wordPos;
-		if(wordPos>=2){
-			wordPos--;
-			$('#answer-div div[data-pos="'+lastWordPos+'"]').removeClass('active');
-			$('#answer-div div[data-pos="'+wordPos+'"]').addClass('active');
+		prevCell = activeCell.parent().prev().children('.answer-box');
+		if(prevCell.length == 0){
+			prevCell = activeCell.closest('tr').prev().find('.answer-box').first();
+		}
+		if(prevCell.length > 0){
+			activeCell.removeClass('active');
+			prevCell.addClass('active');
+			activeCell = prevCell;
 		}
 	}
 	function gotoNextCell(){
 		nextCell = activeCell.parent().next().children('.answer-box');
+		if(nextCell.length == 0){
+			nextCell = activeCell.closest('tr').next().find('.answer-box').first();
+		}
 		if(nextCell.length > 0){
 			activeCell.removeClass('active');
 			nextCell.addClass('active');
@@ -274,7 +320,7 @@
 			activeCell.text(char.toLowerCase());
 
 			// if(activeCell.closest('guess-div').attr('id') == 'null-div'){
-				full = true;
+				let full = true;
 				for(var cell of $('#null-div .answer-box')){
 					let nullChar = $(cell).text();
 					if(nullChar.length == 0){
@@ -283,9 +329,9 @@
 					}
 				}
 				if(full){
-					let newTable = $('#null-div table').first().clone();
+					let newTable = $('#null-div table tr').first().clone();
 					$('.answer-box', newTable).text('').click(clickFocus).removeClass('active');
-					$('#null-div').append(newTable);
+					$('#null-div table').append(newTable);
 				}
 			// }
 
@@ -293,17 +339,13 @@
 		}
 	}
 	function backspace(){
-		if (activeCell) {
+		if (activeCell.text() != '') {
+			activeCell.text('');
+			gotoPrevCell();
+		}else{
+			gotoPrevCell();
 			activeCell.text('');
 		}
-		// if($('#answer-div div[data-pos="'+wordPos+'"]').text() != ''){
-		// 	$('#answer-div div[data-pos="'+wordPos+'"]').text('');
-		// 	$('#answer-div div[data-pos="'+(wordPos+1)+'"]').removeClass('active');
-		// 	$('#answer-div div[data-pos="'+wordPos+'"]').addClass('active');
-		// }else if(wordPos>=2){
-		// 	gotoPrevCell();
-		// 	$('#answer-div div[data-pos="'+wordPos+'"]').text('');
-		// }
 	}
 
 	$('.keyboard-key[data-key]').click(function(){
@@ -326,7 +368,7 @@
 		if (e.keyCode==8){
 			backspace();
 		}else if(e.keyCode == 13){
-			submitWord();
+			searchDictionary();
 		}else if(e.keyCode == 32 || e.keyCode == 39){
 			gotoNextCell();
 		}else if(e.keyCode == 37){
