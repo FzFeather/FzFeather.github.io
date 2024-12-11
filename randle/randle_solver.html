@@ -44,6 +44,7 @@
 	border: 2px solid black;
 	border-radius: 5px;
 	position: relative;
+	text-align: center;
 	text-transform: uppercase;
 }
 .answer-box.active{
@@ -114,11 +115,11 @@
 			<div class="guess-div" id="green-div">
 				<table class="input-table">
 					<tr>
-						<td class="input-box"><div class="answer-box" data-pos="1"></div></td>
-						<td class="input-box"><div class="answer-box" data-pos="2"></div></td>
-						<td class="input-box"><div class="answer-box" data-pos="3"></div></td>
-						<td class="input-box"><div class="answer-box" data-pos="4"></div></td>
-						<td class="input-box"><div class="answer-box" data-pos="5"></div></td>
+						<td class="input-box"><input class="answer-box" data-pos="1" maxlength="1"></td>
+						<td class="input-box"><input class="answer-box" data-pos="2" maxlength="1"></td>
+						<td class="input-box"><input class="answer-box" data-pos="3" maxlength="1"></td>
+						<td class="input-box"><input class="answer-box" data-pos="4" maxlength="1"></td>
+						<td class="input-box"><input class="answer-box" data-pos="5" maxlength="1"></td>
 					</tr>
 				</table>
 			</div>
@@ -128,11 +129,11 @@
 			<div class="guess-div" id="yellow-div">
 				<table class="input-table">
 					<tr>
-						<td class="input-box"><div class="answer-box" data-pos="1"></div></td>
-						<td class="input-box"><div class="answer-box" data-pos="2"></div></td>
-						<td class="input-box"><div class="answer-box" data-pos="3"></div></td>
-						<td class="input-box"><div class="answer-box" data-pos="4"></div></td>
-						<td class="input-box"><div class="answer-box" data-pos="5"></div></td>
+						<td class="input-box"><input class="answer-box" data-pos="1" maxlength="1"></td>
+						<td class="input-box"><input class="answer-box" data-pos="2" maxlength="1"></td>
+						<td class="input-box"><input class="answer-box" data-pos="3" maxlength="1"></td>
+						<td class="input-box"><input class="answer-box" data-pos="4" maxlength="1"></td>
+						<td class="input-box"><input class="answer-box" data-pos="5" maxlength="1"></td>
 					</tr>
 				</table>
 			</div>
@@ -142,11 +143,11 @@
 			<div class="guess-div" id="colorblind-div">
 				<table class="input-table">
 					<tr>
-						<td class="input-box"><div class="answer-box" data-pos="1"></div></td>
-						<td class="input-box"><div class="answer-box" data-pos="2"></div></td>
-						<td class="input-box"><div class="answer-box" data-pos="3"></div></td>
-						<td class="input-box"><div class="answer-box" data-pos="4"></div></td>
-						<td class="input-box"><div class="answer-box" data-pos="5"></div></td>
+						<td class="input-box"><input class="answer-box" data-pos="1" maxlength="1"></td>
+						<td class="input-box"><input class="answer-box" data-pos="2" maxlength="1"></td>
+						<td class="input-box"><input class="answer-box" data-pos="3" maxlength="1"></td>
+						<td class="input-box"><input class="answer-box" data-pos="4" maxlength="1"></td>
+						<td class="input-box"><input class="answer-box" data-pos="5" maxlength="1"></td>
 					</tr>
 				</table>
 			</div>
@@ -156,11 +157,11 @@
 			<div class="guess-div" id="null-div">
 				<table class="input-table">
 					<tr>
-						<td class="input-box"><div class="answer-box" data-pos="1"></div></td>
-						<td class="input-box"><div class="answer-box" data-pos="2"></div></td>
-						<td class="input-box"><div class="answer-box" data-pos="3"></div></td>
-						<td class="input-box"><div class="answer-box" data-pos="4"></div></td>
-						<td class="input-box"><div class="answer-box" data-pos="5"></div></td>
+						<td class="input-box"><input class="answer-box" data-pos="1" maxlength="1"></td>
+						<td class="input-box"><input class="answer-box" data-pos="2" maxlength="1"></td>
+						<td class="input-box"><input class="answer-box" data-pos="3" maxlength="1"></td>
+						<td class="input-box"><input class="answer-box" data-pos="4" maxlength="1"></td>
+						<td class="input-box"><input class="answer-box" data-pos="5" maxlength="1"></td>
 					</tr>
 				</table>
 			</div>
@@ -216,16 +217,12 @@
 
 	// find word
 	function getCell(i, div=null){
-		if(div==null){
-			return $('#answer-div div[data-pos="'+i+'"]');
-		}else{
-			return $('div[data-pos="'+i+'"]', div);
-		}
+		return $('input[data-pos="'+i+'"]', div);
 	}
 	function getWord(div){
 		let word = "";
 		for(let i=1; i<=5; i++){
-			let char = getCell(i, div).text();
+			let char = getCell(i, div).val();
 			if(char.length == 0){
 				word += ' ';
 			}else{
@@ -240,13 +237,13 @@
 			let match = true;
 			for(let i=1; i<=5; i++){
 				// green
-				let greenChar = getCell(i, $('#green-div')).text();
+				let greenChar = getCell(i, $('#green-div')).val();
 				if(greenChar.length == 1 && greenChar != word.charAt(i-1)){
 					match = false;
 					break;
 				}
 				// green
-				let yellowChar = getCell(i, $('#yellow-div')).text();
+				let yellowChar = getCell(i, $('#yellow-div')).val();
 				if(yellowChar.length == 1){
 					if(!word.includes(yellowChar) || yellowChar == word.charAt(i-1)){
 						match = false;
@@ -254,7 +251,7 @@
 					}
 				}
 				// colorblind
-				let cbChar = getCell(i, $('#colorblind-div')).text();
+				let cbChar = getCell(i, $('#colorblind-div')).val();
 				if(cbChar.length == 1 && !word.includes(cbChar)){
 					match = false;
 					break;
@@ -262,7 +259,7 @@
 			}
 			for(var cell of $('#null-div .answer-box')){
 				// null
-				let nullChar = $(cell).text();
+				let nullChar = $(cell).val();
 				if(nullChar.length == 1 && word.includes(nullChar)){
 					match = false;
 					break;
@@ -325,25 +322,43 @@
 		profile[currentProfile].null = [];
 		for(let i=1; i<=5; i++){
 			// green
-			let greenChar = getCell(i, $('#green-div')).text();
+			let greenChar = getCell(i, $('#green-div')).val();
 			profile[currentProfile].green.push(greenChar);
 			// yellow
-			let yellowChar = getCell(i, $('#yellow-div')).text();
+			let yellowChar = getCell(i, $('#yellow-div')).val();
 			profile[currentProfile].yellow.push(yellowChar);
 			// colorblind
-			let colorblindChar = getCell(i, $('#colorblind-div')).text();
+			let colorblindChar = getCell(i, $('#colorblind-div')).val();
 			profile[currentProfile].colorblind.push(colorblindChar);
+		}
+		for(var cell of $('#null-div .answer-box')){
+			let nullChar = $(cell).val();
+			if(nullChar.length == 1){
+				profile[currentProfile].null.push(nullChar)
+			}
 		}
 
 		// clear
-		$('.answer-box').text('');
+		$('.answer-box').val('');
+		$('#null-div tr:not(:first-child)').remove();
 
 		// loadProfile
 		currentProfile = newProfileId;
 		for(let i=1; i<=5; i++){
 			if(profile[currentProfile].green != undefined && profile[currentProfile].green.length >= i)
-			getCell(i, $('#green-div')).text(profile[currentProfile].green[i-1]);
+				getCell(i, $('#green-div')).val(profile[currentProfile].green[i-1]);
+			if(profile[currentProfile].yellow != undefined && profile[currentProfile].yellow.length >= i)
+				getCell(i, $('#yellow-div')).val(profile[currentProfile].yellow[i-1]);
+			if(profile[currentProfile].colorblind != undefined && profile[currentProfile].colorblind.length >= i)
+				getCell(i, $('#colorblind-div')).val(profile[currentProfile].colorblind[i-1]);
 		}
+		for(let i=0; i<profile[currentProfile].null.length; i++){
+			getCell(i+1, $('#null-div')).val(profile[currentProfile].null[i])
+			if( i%5 == 4){
+				cloneNewRole($('#null-div table'));
+			}
+		}
+
 
 		searchDictionary();
 
@@ -356,8 +371,8 @@
 			prevCell = activeCell.closest('tr').prev().find('.answer-box').first();
 		}
 		if(prevCell.length > 0){
-			activeCell.removeClass('active');
-			prevCell.addClass('active');
+			activeCell.removeClass('active').blur();
+			prevCell.addClass('active').focus();
 			activeCell = prevCell;
 		}
 	}
@@ -367,28 +382,36 @@
 			nextCell = activeCell.closest('tr').next().find('.answer-box').first();
 		}
 		if(nextCell.length > 0){
-			activeCell.removeClass('active');
-			nextCell.addClass('active');
+			activeCell.removeClass('active').blur();
+			nextCell.addClass('active').focus();
 			activeCell = nextCell;
 		}
 	}
+	function cloneNewRole(table){
+		let noOfRow = $('tr', table).length;
+		let newTable = $('tr', table).first().clone();
+		$('.answer-box', newTable).val('').click(clickFocus).removeClass('active')
+								  .each(function(index){
+								  	$(this).attr('data-pos', noOfRow*5+index+1);
+								  });
+		$(table).append(newTable);
+
+	}
 	function inputChar(char){
 		if (activeCell) {
-			activeCell.text(char.toLowerCase());
+			activeCell.val(char.toLowerCase());
 
 			// if(activeCell.closest('guess-div').attr('id') == 'null-div'){
 				let full = true;
 				for(var cell of $('#null-div .answer-box')){
-					let nullChar = $(cell).text();
+					let nullChar = $(cell).val();
 					if(nullChar.length == 0){
 						full = false;
 						break;
 					}
 				}
 				if(full){
-					let newTable = $('#null-div table tr').first().clone();
-					$('.answer-box', newTable).text('').click(clickFocus).removeClass('active');
-					$('#null-div table').append(newTable);
+					cloneNewRole($('#null-div table'));
 				}
 			// }
 
@@ -396,12 +419,12 @@
 		}
 	}
 	function backspace(){
-		if (activeCell.text() != '') {
-			activeCell.text('');
+		if (activeCell.val() != '') {
+			activeCell.val('');
 			gotoPrevCell();
 		}else{
 			gotoPrevCell();
-			activeCell.text('');
+			activeCell.val('');
 		}
 	}
 
@@ -409,7 +432,7 @@
 		inputChar($(this).data("key"));
 	});
 	$('#backspace-btn').click(backspace);
-	$(document).on('keypress', function(e){
+	$(document).on('keyup', function(e){
 		if (event.keyCode >= 65 && event.keyCode <= 90) {
 		    // Alphabet upper case
 		} else if (event.keyCode >= 97 && event.keyCode <= 122) {
@@ -424,6 +447,7 @@
 	$(document).on('keydown', function(e){
 		if (e.keyCode==8){
 			backspace();
+			e.preventDefault();
 		}else if(e.keyCode == 13){
 			searchDictionary();
 		}else if(e.keyCode == 32 || e.keyCode == 39){
@@ -442,7 +466,8 @@
 
 	$(".answer-box").click(clickFocus);
 	$('#clear-btn').click(function(){
-		$('.answer-box').text('');
+		$('.answer-box').val('');
+		$('#null-div tr:not(:first-child)').remove();
 	});
 	$('#search-btn').click(searchDictionary);
 	$('#addTabBtn').click(function(){
